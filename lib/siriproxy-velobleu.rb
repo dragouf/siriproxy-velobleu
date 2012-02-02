@@ -7,7 +7,7 @@ require 'json'
 require 'open-uri'
 require 'uri'
 
-class SiriProxy::Plugin::Velobleu < SiriProxy::Plugin   
+class SiriProxy::Plugin::VeloBleu < SiriProxy::Plugin   
     def initialize(config)
       #if you have custom configuration options, process them here!
     end
