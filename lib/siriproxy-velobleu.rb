@@ -6,6 +6,7 @@ require 'timeout'
 require 'json'
 require 'open-uri'
 require 'uri'
+require 'xmlrpc/client'
 
 class SiriProxy::Plugin::VeloBleu < SiriProxy::Plugin   
     def initialize(config)
@@ -23,6 +24,27 @@ class SiriProxy::Plugin::VeloBleu < SiriProxy::Plugin
     	$userLatitude = object["properties"]["latitude"]
 	end 
 
+	# Where am i - shows map with current location
+listen_for /(station velo bleu (.*) proche)/i do
+	if $userLongitude == NIL
+    	say "J'aime aussi le savoir, mais sans les données GPS, je suis juste un téléphone stupide."
+    else
+    	add_views = SiriAddViews.new
+    	add_views.make_root(last_ref_id)
+    	map_snippet = SiriMapItemSnippet.new(true)
+ 		siri_location = SiriLocation.new("", "Autour de vous", "", "", "", "", $userLatitude.to_f, $userLongitude.to_s) 
+	    map_snippet.items << SiriMapItem.new(label="Vous êtes ici", location=siri_location, detailType="BUSINESS_ITEM")
+	    print map_snippet.items
+	    utterance = SiriAssistantUtteranceView.new("Très bien, je vous localise.")
+		add_views.views << utterance
+    	add_views.views << map_snippet
+    
+   		#you can also do "send_object object, target: :guzzoni" in order to send an object to guzzoni
+    	send_object add_views #send_object takes a hash or a SiriObject object
+    end
+    request_completed #always complete your request! Otherwise the phone will "spin" at the user!
+  end
+  
 # Where am i - shows map with current location
 listen_for /(Où suis-je|Où je suis|Localise-moi|Trouve moi|Trouve où je suis)/i do
 	if $userLongitude == NIL
@@ -121,8 +143,12 @@ listen_for /(Mes emplacements|Montre-moi la positon|Positions enregistrées|Affi
   request_completed
 end
 
-
-#    Thanks to http://www.esawdust.com/blog/businesscard/businesscard.html
+# get json data from proxy
+def get_velobleu_data
+	server = XMLRPC::Client.new( "localhost", "/VeloBleuProxy/index.php/iphoneXmlRpc/")
+	result = server.call("get.stations")
+	parsedObject = result.to_json();
+end
 # for the distance calculation code
 def haversine_distance( lat1, lon1, lat2, lon2 )
 	self::class::const_set(:RAD_PER_DEG, 0.017453293)
