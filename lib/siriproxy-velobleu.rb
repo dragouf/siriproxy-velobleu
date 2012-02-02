@@ -165,7 +165,7 @@ listen_for /Trouve les stations velo beu/i do
 	# Parcours les stations
 	indexStation = 0
 	#bestStation = Array.new
-	jsonObject['stations'].each  do |station|
+	jsonObject['stations'].each do |station|
 	  isDisplay = station['EstAfficher']
 	  stationLong = station['Longitude']
 	  stationLat = station['Latitude']
@@ -183,6 +183,7 @@ listen_for /Trouve les stations velo beu/i do
 	  indexStation += 1
 	  if(indexStation > 3)
 	    break
+    end
   end
 	  say "Voici les stations que j'ai trouvé"
 	  print map_snippet.items
@@ -216,4 +217,3 @@ def haversine_distance( lat1, lon1, lat2, lon2 )
 	@distances["m"] = dMeters
 end
 end
- 
