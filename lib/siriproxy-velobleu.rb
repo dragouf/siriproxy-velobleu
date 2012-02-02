@@ -2,15 +2,13 @@
 require 'cora'
 require 'siri_objects'
 require 'eat'
-require 'nokogiri'
 require 'timeout'
 require 'json'
 require 'open-uri'
 require 'uri'
 require 'siren' #for sorting json hashes
 
-class SiriProxy::Plugin::Velobleu < SiriProxy::Plugin
-     
+class SiriProxy::Plugin::Velobleu < SiriProxy::Plugin   
     def initialize(config)
       #if you have custom configuration options, process them here!
     end
@@ -147,7 +145,5 @@ def haversine_distance( lat1, lon1, lat2, lon2 )
 	@distances["km"] = dKm
 	@distances["m"] = dMeters
 end
-
-
 end
  
