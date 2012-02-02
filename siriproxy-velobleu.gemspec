@@ -20,9 +20,6 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
   # s.add_development_dependency "rspec"
   s.add_runtime_dependency "rest-client"
-  s.add_runtime_dependency "eat"
-  s.add_runtime_dependency "httparty"
   s.add_runtime_dependency "json"
-  s.add_runtime_dependency "siren"
   #s.add_runtime_dependency "uri"
 end

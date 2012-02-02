@@ -1,12 +1,11 @@
 # -*- encoding: utf-8 -*-
 require 'cora'
 require 'siri_objects'
-require 'eat'
+require 'pp'
 require 'timeout'
 require 'json'
 require 'open-uri'
 require 'uri'
-require 'siren' #for sorting json hashes
 
 class SiriProxy::Plugin::Velobleu < SiriProxy::Plugin   
     def initialize(config)
