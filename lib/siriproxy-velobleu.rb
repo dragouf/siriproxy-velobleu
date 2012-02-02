@@ -144,11 +144,56 @@ listen_for /(Mes emplacements|Montre-moi la positon|Positions enregistrées|Affi
 end
 
 # get json data from proxy
-def get_velobleu_data
+listen_for /Trouve les stations velo beu/i do 
 	server = XMLRPC::Client.new( "localhost", "/VeloBleuProxy/index.php/iphoneXmlRpc/")
-	result = server.call("get.stations")
-	parsedObject = result.to_json();
+	# Recupere les stations
+	jsonText = server.call("get.stations")
+	
+	# parse la reponse
+	empl = jsonText
+  empl.chop
+  empl.reverse
+  empl.chop
+  empl.reverse
+  empl.gsub('\"', '"')
+  jsonObject = JSON.parse(empl)	
+	
+	add_views = SiriAddViews.new
+  add_views.make_root(last_ref_id)
+  map_snippet = SiriMapItemSnippet.new(true)
+  
+	# Parcours les stations
+	indexStation = 0
+	#bestStation = Array.new
+	jsonObject['stations'].each  do |station|
+	  isDisplay = station['EstAfficher']
+	  stationLong = station['Longitude']
+	  stationLat = station['Latitude']
+	  freeBike = station['VelosDisponibles']
+	  totalDocks = station['EmplacamentTotal']
+	  freeDocks = station['EmplacementLibre']
+	  nomStation = "Station " + station['IdStation']
+	  
+	  # Calcul la distance avec l'utilisateur et cree un tableau des 3 meilleurs
+	  # ajoute les 3 meilleurs resultats (les plus proches) sur la carte
+	  
+    siri_location = SiriLocation.new(nomStation, "", "Nice", "", "FR", "", stationLat, stationLong) 
+    map_snippet.items << SiriMapItem.new(label=nomStation , location=siri_location, detailType="BUSINESS_ITEM")
+	
+	  indexStation += 1
+	  if(indexStation > 3)
+	    break
+  end
+	  say "Voici les stations que j'ai trouvé"
+	  print map_snippet.items
+    utterance = SiriAssistantUtteranceView.new("Choisissez dans la liste")
+    add_views.views << utterance
+    add_views.views << map_snippet
+    send_object add_views #send_object takes a hash or a SiriObject object
+    
+    request_completed
 end
+
 # for the distance calculation code
 def haversine_distance( lat1, lon1, lat2, lon2 )
 	self::class::const_set(:RAD_PER_DEG, 0.017453293)
