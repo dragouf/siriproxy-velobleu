@@ -144,7 +144,7 @@ listen_for /(Mes emplacements|Montre-moi la positon|Positions enregistrées|Affi
 end
 
 # get json data from proxy
-listen_for /Trouve les stations velo beu/i do 
+listen_for /Trouve les stations/i do 
 	server = XMLRPC::Client.new( "localhost", "/VeloBleuProxy/index.php/iphoneXmlRpc/")
 	# Recupere les stations
 	jsonText = server.call("get.stations")
